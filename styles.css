@@ -1,0 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@600&family=Open+Sans:wght@500&family=Poppins&family=Roboto&display=swap');
+:root {
+    --colorPlayer1Text1:rgb(179, 9, 9);
+    --colorPlayer1Text2:rgb(94, 47, 65);
+    --colorPlayer1Text3:rgb(65, 11, 11);
+    --colorPlayer2Text1:rgb(9, 12, 179);
+    --colorPlayer2Text2:rgb(35, 16, 122);
+    --colorPlayer2Text3:rgb(13, 6, 51);
+    --gamecolor1:#edede9;
+    --gamecolor2:#d6ccc2;
+    --gamecolor3:#b6aba0;
+    --gamecolor4:#e3d5ca;
+    --gamecolor5:#d5bdaf;
+    --gamecolor5:#83c5be;
+    --gamecolor6:#645852;
+    --buttoncolor1:#4aa6df;
+    --buttoncolor2:#1d3557;
+    --titlecolor:rgba(19, 188, 255, 0.9);
+
+}
+* {
+    margin:0;
+    box-sizing: border-box;
+}
+body {    
+    background-color: gray;
+    width:100%;
+    height:100%;
+}
+.pagetitle {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 60px;
+    text-align: center;
+    font-weight: 900;
+    padding:10px 0px 0px;
+    color:var(--titlecolor);
+    text-shadow: 1px 1px var(--colorPlayer2Text3),2px 0 var(--colorPlayer2Text3), 0 0 25px var(--colorPlayer2Text3), 5px 5px 10px var(--colorPlayer2Text3);
+}   
+.board {
+    font-family: 'Dosis', sans-serif;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    background-color: var(--buttoncolor1);
+    gap:5px;
+    margin:10px auto;
+    
+}
+@media (orientation:landscape) {
+    .board {
+        height: calc(100vh * 0.5);
+        width: calc(100vh * 0.5);
+    }
+}
+@media (orientation:portrait) {
+    .board {
+        height: calc(100vw * 0.5);
+        width: calc(100vw * 0.5);
+    }
+}
+.board .cell {
+    background-color: var(--gamecolor3);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color:antiquewhite;
+    font-size: calc(min(100vh, 100vw) * 0.1); 
+    overflow: hidden;
+}
+.board .cell.player1 {
+  color:var(--colorPlayer1Text1);
+  text-shadow: -1px 0 var(--colorPlayer1Text3), 0 1px var(--colorPlayer1Text3), 1px 0 var(--colorPlayer1Text3), 0 -1px var(--colorPlayer1Text3),1px 1px 2px var(--colorPlayer1Text3), 0 0 25px var(--colorPlayer1Text2), 5px 5px 10px var(--colorPlayer1Text3);
+}
+.board .cell.player2 {
+    color:var(--colorPlayer2Text1);
+    text-shadow: -1px 0 var(--colorPlayer2Text3), 0 1px var(--colorPlayer2Text3), 1px 0 var(--colorPlayer2Text3), 0 -1px var(--colorPlayer2Text3),1px 1px 2px var(--colorPlayer2Text3), 0 0 25px var(--colorPlayer2Text2), 5px 5px 10px var(--colorPlayer2Text3);
+  }
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    position:relative;
+}
+.container button {
+    font-size: 2rem;
+    padding:10px 15px;
+    /* margin:5px 0px 15px 0px; */
+    margin-bottom: 20px;
+    width:150px;
+    border-radius: 5px;
+    background-color: var(--buttoncolor1);
+    border:2px solid var(--buttoncolor2);
+    color:var(--gamecolor1);
+}
+.container button:hover {
+    background-color: var(--buttoncolor2);
+    border:2px solid var(--buttoncolor2);
+    color:var(--gamecolor1);
+}
+/* ------- selection display -------- */
+.selection {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position:absolute;
+    width:calc(min(100vh, 100vw) * 0.4);
+    height:calc(min(100vh, 100vw) * 0.4);
+    margin:50px;
+    top:calc(min(100vh, 100vw) * 0.05);
+    background-color: var(--gamecolor5);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color:var(--buttoncolor2);
+    border-radius: 10px;
+    z-index: 3;
+}
+.seltoggle {
+    visibility: hidden;
+}
+.selection input[type=text]{
+    margin:5px 0px 20px;
+    border-radius: 100vw;
+    width:80%;
+    font-size: 1.25rem;
+    text-align: center;
+    font-family: inherit;
+    font-family: 'Poppins',sans-serif;
+    color:var(--buttoncolor2);
+}
+.selection input[type=text]:focus{
+    border:2px solid transparent;
+    outline:2px solid cyan;
+}
+.selection input[type=range]{
+    margin:5px 0px 20px;
+    /* color:blue; */
+    accent-color: var(--buttoncolor1);
+    width:30px;
+    
+}
+.selection button {
+    width:40%;
+    font-size: 1.5rem;
+    background-color: var(--gamecolor1);
+    color:var(--buttoncolor2);
+}
+/* ------- winner display -------- */
+.displaywinner {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position:absolute;
+    z-index: 2;
+    width:calc(min(100vh, 100vw) * 0.4);
+    height:calc(min(100vh, 100vw) * 0.4);
+    margin:50px;
+    top:calc(min(100vh, 100vw) * 0.05);
+    background-color: var(--gamecolor5);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color:var(--buttoncolor2);
+    border-radius: 10px;
+}
+.winnertoggle {
+    visibility: hidden;
+}
+.backdrop {
+    position:fixed;
+    width:100vw;
+    height: 100vh;
+    z-index: 1;
+    top:0;
+    backdrop-filter: blur(2px);
+    background-color: #64585270;
+}
+.backdroptoggle {
+    visibility: hidden;
+}
+.winnertitle {
+    font-size: 25px;
+    margin:15px 0px;
+}
+.winnername {
+    color:var(--colorPlayer1Text1);
+    font-size: 30px;
+    margin:15px 0px;
+    width:90%;
+    overflow: hidden;
+    text-align: center;
+}
+.okbutton {
+    margin-top: 15px;
+}
