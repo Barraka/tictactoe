@@ -1,0 +1,95 @@
+function checkscore(target=gameboard.mainApp.gamearray) {
+    //rows
+    if(target[0][0]===1 && target[0][1]===1 && target[0][2]===1)return 1;
+    if(target[0][0]===2 && target[0][1]===2 && target[0][2]===2)return 2;
+    if(target[1][0]===1 && target[1][1]===1 && target[1][2]===1)return 1;
+    if(target[1][0]===2 && target[1][1]===2 && target[1][2]===2)return 2;
+    if(target[2][0]===1 && target[2][1]===1 && target[2][2]===1)return 1;
+    if(target[2][0]===2 && target[2][1]===2 && target[2][2]===2)return 2;
+    //columns
+    if(target[0][0]===1 && target[1][0]===1 && target[2][0]===1)return 1;
+    if(target[0][0]===2 && target[1][0]===2 && target[2][0]===2)return 2;
+    if(target[0][1]===1 && target[1][1]===1 && target[2][1]===1)return 1;
+    if(target[0][1]===2 && target[1][1]===2 && target[2][1]===2)return 2;
+    if(target[0][2]===1 && target[1][2]===1 && target[2][2]===1)return 1;
+    if(target[0][2]===2 && target[1][2]===2 && target[2][2]===2)return 2;
+    //diags
+    if(target[0][0]===1 && target[1][1]===1 && target[2][2]===1)return 1;
+    if(target[0][0]===2 && target[1][1]===2 && target[2][2]===2)return 2;
+    if(target[0][2]===1 && target[1][1]===1 && target[2][0]===1)return 1;
+    if(target[0][2]===2 && target[1][1]===2 && target[2][0]===2)return 2;
+    let count=0;
+    for(let i=0;i<2;i++){
+        for(let j=0;j<2;j++){
+            if(target[i][j]!=='')count++;
+        }
+    }
+    if(count===9)return -1;
+    return 0;
+}
+let ai = 2;
+let human = 1;
+
+let bestMove = function() {
+    let bestScore = -Infinity;
+    let move=[];
+    for(let i=0;i<3;i++){
+        for(let j=0;j<3;j++) {
+            if(gameboard.mainApp.gamearray[i][j] === ''){
+                gameboard.mainApp.gamearray[i][j] = ai;
+                let score = minimax(gameboard.mainApp.gamearray, 0, false);
+                gameboard.mainApp.gamearray[i][j] = '';
+                if(score > bestScore){
+                    bestScore = score;
+                    move = [i,j];
+                }
+            }
+        }            
+    }
+    let target=document.querySelector(`.c${move[0]}${move[1]}`);
+    gameboard.mainApp.makemove(target,false);
+}
+let scores = {
+    human: -10,
+    ai: 10,
+    tie: 0,
+}
+let minimax = function(board, depth, isMaximzing){ 
+    let verifyscore=checkscore();
+    if(verifyscore===1){
+        return scores['human'];
+    }else if(verifyscore===2){
+        return scores['ai'];
+    }else if(verifyscore===-1){
+        return scores['tie'];
+    }  
+    if(isMaximzing){
+        let bestScore = -Infinity;
+        for(let i=0;i<3;i++){
+            for(let j=0;j<3;j++) {
+                if(i===2 && j===2){}; //debugging
+                if(board[i][j] === ''){                    
+                    board[i][j] = ai;
+                    let score = minimax(board, depth + 1, false);
+                    board[i][j] = '';
+                    bestScore = Math.max(score, bestScore);
+                }
+            }                
+        }
+        return bestScore;
+    }else{
+        let bestScore = Infinity;
+        for(let i=0;i<3;i++){
+            for(let j=0;j<3;j++) {
+                if(i===2 && j===2){}; //debugging
+                if(board[i][j] === ''){
+                    board[i][j] = human;
+                    let score = minimax(board, depth + 1, true);
+                    board[i][j] = '';
+                    bestScore = Math.min(score, bestScore);
+                }
+            }                
+        }
+        return bestScore;
+    }
+}

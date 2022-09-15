@@ -200,6 +200,11 @@ body {
     font-weight: 700;
     color:var(--buttoncolor2);
     border-radius: 10px;
+
+    background: linear-gradient(var(--buttoncolor1), var(--gamecolor5));
+
+
+    border:4px dashed var(--colorPlayer2Text3);
 }
 .winnerhide {
     visibility: hidden;

@@ -2,7 +2,7 @@
   
   .buttonstart {
     --background-color: rgba(19, 188, 255, 0.9);
-    --border-color: radial-gradient(rgb(110, 161, 173), rgb(11, 11, 129)); 
+    --border-color: linear-gradient(to bottom right, rgb(204, 31, 31), rgb(12, 12, 90));
     --border-width: 0.3em;
     --edge-size: 0.6em;
   
@@ -14,10 +14,15 @@
     isolation: isolate;
     display: inline-grid;
     place-content: center;
-    clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%,0 100%);
+    clip-path: polygon(
+      var(--edge-size) 0%,
+      100% 0,
+      100% calc(100% - var(--edge-size)),
+      calc(100% - var(--edge-size)) 100%,
+      0 100%,
+      0% var(--edge-size)
+    );
     transition: color 250ms;
-    color:var(--colorPlayer1Text1);
-    font-weight: 800;
   }
   
   .buttonstart::before {
@@ -30,13 +35,26 @@
   
   .buttonstart::after {
     content: "";
-    --border:5px;
   position: absolute;
   inset: 0;
   background: var(--background-color);
   z-index: -1;
-  clip-path: polygon(var(--border) var(--border), calc(80% - var(--border)*0.4) var(--border), calc(100% - var(--border)*1.4) 50%, calc(80% - var(--border)*0.4) calc(100% - var(--border)), var(--border)  calc(100% - var(--border)) );
-  
+  clip-path: polygon(
+    /* // top left 1 */
+    var(--border-width) calc(var(--edge-size) + var(--border-width) * 0.4142),
+    /* // top left 2 */
+    calc(var(--edge-size) + var(--border-width) * 0.4142) var(--border-width),
+    /* // top right */
+    calc(100% - var(--border-width)) var(--border-width),
+    /* //bottom right - 1 */
+    calc(100% - var(--border-width))
+      calc(100% - calc(var(--edge-size) + var(--border-width) * 0.4142)),
+    /* // bottom right - 2 */
+    calc(100% - calc(var(--edge-size) + var(--border-width) * 0.4142))
+      calc(100% - var(--border-width)),
+    /* // bottom left */
+    calc(var(--border-width)) calc(100% - var(--border-width))
+    );
     transition: clip-path 500ms;
   }
   
@@ -45,9 +63,26 @@
   }
   
   .buttonstart:hover::after {
-    /* clip-path: polygon(80% var(--border), 80% var(--border), calc(100% - var(--border)*1.4) 50%, 80% calc(100% - var(--border)), 80%  calc(100% - var(--border)) ); */
-    clip-path: polygon(100% var(--border), 100% var(--border), 150% 50%, 100% calc(100% - var(--border)), 100% calc(100% - var(--border)));
-    
+    /* clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%); */
+  
+    clip-path: polygon(
+      /* // top left 1 */
+      calc(100% - var(--border-width))
+        calc(100% - calc(var(--edge-size) + var(--border-width) * 0.5)),
+      /* // top left 2 */
+      calc(100% - var(--border-width)) var(--border-width),
+      /* // top right */
+      calc(100% - var(--border-width)) var(--border-width),
+      /* //bottom right - 1 */
+      calc(100% - var(--border-width))
+        calc(100% - calc(var(--edge-size) + var(--border-width) * 0.5)),
+      /* // bottom right - 2 */
+      calc(100% - calc(var(--edge-size) + var(--border-width) * 0.5))
+        calc(100% - var(--border-width)),
+      /* // bottom left */
+      calc(100% - calc(var(--edge-size) + var(--border-width) * 0.5))
+        calc(100% - var(--border-width))
+    );
   }
   
 /* ------------- go button -------------------- */

@@ -139,7 +139,7 @@ animation-iteration-count: 4;
 animation-direction: alternate;
 }
 /* ------- end hint effect -------- */
-/* ------- selection intro effect -------- */
+/* ------- selection effect -------- */
 
 .selection {
     transition: all 0.4s;
@@ -150,4 +150,80 @@ animation-direction: alternate;
 .selectionAnimationOut {
     transform: scale(0.0);
 }
-/* ------- end selection intro effect -------- */
+/* ------------------------------ */
+/* ------- winner effect -------- */
+
+.displaywinner {
+    transition: all 0.4s;
+    transform: scale(0.0);
+}
+.displaywinnerIn {
+    transform: scale(1.0);
+}
+.displaywinnerOut {
+    transform: scale(0.0);
+}
+/* ---------------------------------------- */
+/* ----------- animate cells -------------- */
+@-webkit-keyframes animateCells {
+    from {
+        -webkit-transform: scale(1.0);
+      transform: scale(1.0);}
+    to {
+      -webkit-transform: scale(1.5);
+      transform: scale(1.5);
+    }}
+@keyframes animateCells {
+    from {
+        -webkit-transform: scale(1.0);
+        transform: scale(1.0);}
+to {
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+}}
+
+.animateCell span {
+    -webkit-animation-name: animateCells;
+    animation-name: animateCells;
+    -webkit-animation-duration: 0.25s;
+    animation-duration: 0.25s;
+    -webkit-animation-timing-function: linear;
+    animation-timing-function: linear;
+    -webkit-animation-iteration-count: 6;
+    animation-iteration-count: 6;
+    -webkit-animation-direction: alternate;
+    animation-direction: alternate;    
+}
+/* ------------------------------ */
+
+/* ----------- animate names -------------- */
+@-webkit-keyframes animateName {
+    from {
+        -webkit-transform: scale(0.8);
+      transform: scale(0.8);}
+    to {
+      -webkit-transform: scale(1.1);
+      transform: scale(1.1);
+    }}
+@keyframes animateName {
+    from {
+        -webkit-transform: scale(0.8);
+        transform: scale(0.8);}
+to {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+}}
+
+.nameanimation {
+    -webkit-animation-name: animateName;
+    animation-name: animateName;
+    -webkit-animation-duration: 2s;
+    animation-duration: 2s;
+    -webkit-animation-timing-function: linear;
+    animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-direction: alternate;
+    animation-direction: alternate;    
+}
+  
