@@ -21,6 +21,7 @@
 * {
     margin:0;
     box-sizing: border-box;
+    user-select: none;
 }
 body {    
     background-color: gray;
@@ -63,7 +64,9 @@ body {
     grid-template-rows: repeat(3, 1fr);
     background-color: var(--buttoncolor1);
     gap:5px;
-    margin:10px auto;    
+    margin:10px auto;
+    outline:2px solid var(--gamecolor6);    
+    
 }
 .boardX{
     cursor: url(X.svg), pointer;
@@ -72,7 +75,17 @@ body {
     cursor: url(O.svg), pointer;
 }
 .boardHover{
-    outline:2px solid lime;
+    /* outline:2px solid lime; */
+    box-shadow: inset 0px 0px 3px 3px lime;
+    /* background-color: lime; */
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index: 1;
+
+
 }
 
 @media (orientation:landscape) {
@@ -88,6 +101,7 @@ body {
     }
 }
 .board .cell {
+    position:relative;
     background-color: var(--gamecolor3);
     display:flex;
     justify-content: center;
@@ -96,6 +110,10 @@ body {
     color:antiquewhite;
     font-size: calc(min(100vh, 100vw) * 0.1); 
     overflow: hidden;
+    
+}
+.board .cellshadow {
+    box-shadow: inset 0px 0px 15px 5px var(--gamecolor6);
 }
 .board .cell.player1 {
   color:var(--colorPlayer1Text1);
@@ -141,21 +159,60 @@ body {
     justify-content: center;
     align-items: center;
     position:absolute;
-    width:calc(min(100vh, 100vw) * 0.4);
-    height:calc(min(100vh, 100vw) * 0.4);
+    /* width:calc(min(100vh, 100vw) * 0.4);
+    height:calc(min(100vh, 100vw) * 0.4); */
     margin:50px;
     top:calc(min(100vh, 100vw) * 0.05);
     /* background-color: var(--buttoncolor1); */
     background: linear-gradient(var(--buttoncolor1), var(--gamecolor5));
     font-size: 1.25rem;
     font-weight: 700;
-    color:var(--buttoncolor2);
+    color:var(--colorPlayer2Text3);
     border-radius: 10px;
-    border:4px dashed var(--colorPlayer2Text3);
+    border:4px solid var(--colorPlayer2Text3);
     z-index: 3;
+    box-shadow: inset 0px 0px 15px 5px var(--colorPlayer2Text3);
 }
 .selectionHide {
     visibility: hidden;
+}
+.selection .text1 {
+    margin:10px 0px;
+}
+.row {
+    height:initial;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:30px;
+    padding:0;
+    margin:15px 0px;
+}
+.selection .cont1 {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.selection .cont1 .opponenttype {
+    margin: 15px 0px;
+}
+.selection .row img {
+    width:125px;
+    height: 125px;
+    border-radius: 50%;
+    outline:4px solid rgb(65, 65, 65);
+    box-shadow: 0px 0px 15px 15px var(--colorPlayer2Text3), 5px 5px 12px 5px var(--colorPlayer2Text3); 
+}
+.selection .row .cont1:hover img {
+    outline:6px solid rgb(73, 245, 96);
+}
+.selection .row .cont1:hover .opponenttype {
+    color:rgb(73, 245, 96);
+}
+.selection .row .imgselect {
+    outline:4px solid rgb(73, 245, 96);
+    box-shadow: 0px 0px 15px 15px rgb(21, 99, 32), 5px 5px 12px 5px rgb(51, 161, 66); 
 }
 .selection input[type=text]{
     margin:5px 0px 20px;
@@ -167,21 +224,21 @@ body {
     font-family: 'Poppins',sans-serif;
     color:var(--colorPlayer2Text3);
     border:2px solid var(--colorPlayer2Text3);
+    box-shadow:  0px 0px 15px 5px var(--colorPlayer2Text3);
+    background-color: antiquewhite;
+}
+.selection input[type=text]:disabled {
+    background-color: gray;
 }
 .selection input[type=text]:focus{
     border:2px solid var(--titlecolor);
     outline:2px solid var(--titlecolor);
 }
-.selection input[type=range]{
-    margin:5px 10px 20px 10px;
-    accent-color: var(--colorPlayer2Text3);
-    width:30px;    
-}
 .selection button {
     width:40%;
     font-size: 1.5rem;
     background-color: var(--gamecolor1);
-    color:var(--buttoncolor2);
+    color:var(--buttoncolor2);    
 }
 /* ------- winner display -------- */
 .displaywinner {
@@ -204,7 +261,8 @@ body {
     background: linear-gradient(var(--buttoncolor1), var(--gamecolor5));
 
 
-    border:4px dashed var(--colorPlayer2Text3);
+    border:4px solid var(--colorPlayer2Text3);
+    box-shadow: inset 0px 0px 15px 5px var(--colorPlayer2Text3);
 }
 .winnerhide {
     visibility: hidden;

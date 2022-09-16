@@ -19,8 +19,8 @@ function checkscore(target=gameboard.mainApp.gamearray) {
     if(target[0][2]===1 && target[1][1]===1 && target[2][0]===1)return 1;
     if(target[0][2]===2 && target[1][1]===2 && target[2][0]===2)return 2;
     let count=0;
-    for(let i=0;i<2;i++){
-        for(let j=0;j<2;j++){
+    for(let i=0;i<3;i++){
+        for(let j=0;j<3;j++){
             if(target[i][j]!=='')count++;
         }
     }
@@ -32,42 +32,42 @@ let human = 1;
 
 let bestMove = function() {
     let bestScore = -Infinity;
-    let move=[];
+    let move;
     for(let i=0;i<3;i++){
         for(let j=0;j<3;j++) {
             if(gameboard.mainApp.gamearray[i][j] === ''){
                 gameboard.mainApp.gamearray[i][j] = ai;
-                let score = minimax(gameboard.mainApp.gamearray, 0, false);
-                gameboard.mainApp.gamearray[i][j] = '';
+                let score = minimax(gameboard.mainApp.gamearray, 0, false);  
+                gameboard.mainApp.gamearray[i][j] = '';              
                 if(score > bestScore){
                     bestScore = score;
-                    move = [i,j];
+                    move = {i,j};
                 }
+                
             }
         }            
     }
-    let target=document.querySelector(`.c${move[0]}${move[1]}`);
-    gameboard.mainApp.makemove(target,false);
+    let target=document.querySelector(`.c${move['i']}${move['j']}`);
+    gameboard.mainApp.sleep(750);
+    setTimeout(e=>{
+        gameboard.mainApp.makemove(target,false);
+    },750);
+    
 }
-let scores = {
-    human: -10,
-    ai: 10,
-    tie: 0,
-}
+
 let minimax = function(board, depth, isMaximzing){ 
     let verifyscore=checkscore();
     if(verifyscore===1){
-        return scores['human'];
+        return -10;
     }else if(verifyscore===2){
-        return scores['ai'];
+        return +10;
     }else if(verifyscore===-1){
-        return scores['tie'];
+        return 0;
     }  
     if(isMaximzing){
         let bestScore = -Infinity;
         for(let i=0;i<3;i++){
             for(let j=0;j<3;j++) {
-                if(i===2 && j===2){}; //debugging
                 if(board[i][j] === ''){                    
                     board[i][j] = ai;
                     let score = minimax(board, depth + 1, false);
@@ -81,7 +81,6 @@ let minimax = function(board, depth, isMaximzing){
         let bestScore = Infinity;
         for(let i=0;i<3;i++){
             for(let j=0;j<3;j++) {
-                if(i===2 && j===2){}; //debugging
                 if(board[i][j] === ''){
                     board[i][j] = human;
                     let score = minimax(board, depth + 1, true);

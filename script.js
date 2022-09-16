@@ -39,24 +39,41 @@ let gameboard = (function () {
             else buttonstart.classList.add('hvr-pulse-grow');        
         },
     };
-    let objectSelection =  {        
+    let objectSelection =  {       
         attachSelection:function() {
             let selection=document.createElement('div');
             selection.classList.add('selection', 'selectionHide','selectionAnimationOut');
             let text1=document.createElement('div');
             text1.classList.add('text1');
-            text1.textContent='How many players?';
+            text1.textContent='Choose your opponent:';
             let row=document.createElement('div');
-            let range=document.createElement('input');
-            let span1=document.createElement('span');
-            let span2=document.createElement('span');
-            span1.textContent=1;
-            span2.textContent=2;
-            Object.assign(range,{min:1,max:2,step:1,type:'range'});
-            range.classList.add('range');
-            row.appendChild(span1);
-            row.appendChild(range);
-            row.appendChild(span2);
+            row.classList.add('row');
+            let cont1=document.createElement('div');
+            let human=document.createElement('img');
+            let p1name=document.createElement('div');
+            let cont2=document.createElement('div');
+            let ai=document.createElement('img');
+            let p2name=document.createElement('div');
+            p1name.textContent='Human';
+            p2name.textContent='Xan';
+            cont1.classList.add('cont1');
+            cont2.classList.add('cont1');
+            p1name.classList.add('opponenttype');
+            p2name.classList.add('opponenttype');
+            human.id="img1";
+            ai.id="img2";
+            human.addEventListener('click',objectSelection.highlightplayer);
+            ai.addEventListener('click',objectSelection.highlightplayer);
+            human.setAttribute('src','human.webp');
+            ai.setAttribute('src','xan.webp');
+            human.setAttribute('draggable','false');
+            ai.setAttribute('draggable','false');
+            cont1.appendChild(human);
+            cont1.appendChild(p1name);
+            cont2.appendChild(ai);
+            cont2.appendChild(p2name);
+            row.appendChild(cont1);
+            row.appendChild(cont2);
             let text2=document.createElement('div');
             text2.textContent='Player 1 name:';
             let p1=document.createElement('input');
@@ -80,6 +97,7 @@ let gameboard = (function () {
             selection.appendChild(p2);
             selection.appendChild(go);
             go.addEventListener('click',mainApp.gamestart);
+            go.addEventListener('click',objectSelection.hintplayer);
             container.appendChild(selection);
         },
         eraseField:function(){
@@ -90,10 +108,48 @@ let gameboard = (function () {
             let textName1=container.querySelector('#player1');
             let textName2=container.querySelector('#player2');
             if(n===1)return textName1.value;
-            if(n===2)return textName2.value;
+            if(n===2){
+                if(mainApp.opponent==='xan')return 'Xan';
+                else return textName2.value;
+            }
         },
-        getNumberOfPlayers:function(){
-            return range.value;
+        
+        highlightplayer:function(p){
+            let p1=container.querySelector('#img1');
+            let p2=container.querySelector('#img2');
+            if(p==='erase'){
+                p2.classList.remove('imgselect');
+                p1.classList.remove('imgselect');
+                return;
+            }
+            if(p.currentTarget.id==='img1'){
+                p1.classList.add('imgselect');
+                p2.classList.remove('imgselect');
+                mainApp.opponent='human';
+                objectSelection.enableinput();
+            }
+            if(p.currentTarget.id==='img2'){
+                p1.classList.remove('imgselect');
+                p2.classList.add('imgselect');
+                mainApp.opponent='xan';
+                objectSelection.disableinput();
+            }            
+        },
+        hintplayer(){            
+            let p1=container.querySelector('#img1');
+            let p2=container.querySelector('#img2');
+            if(p1.classList.contains('hvr-pulse-grow') ||p2.classList.contains('hvr-pulse-grow')){
+                p1.classList.remove('hvr-pulse-grow');
+                p2.classList.remove('hvr-pulse-grow');
+                setTimeout(e=>{
+                    p1.classList.add('hvr-pulse-grow');
+                    p2.classList.add('hvr-pulse-grow');
+                },10);
+            }
+            else {
+                p1.classList.add('hvr-pulse-grow');
+                p2.classList.add('hvr-pulse-grow');
+            }
         },
         showSelection:function(){
             let selection=container.querySelector('.selection');
@@ -107,6 +163,18 @@ let gameboard = (function () {
             let bs=container.querySelector('.gobutton');
             bs.style.display='block';
         },
+        disableinput:function(){
+            let inp=container.querySelector('#player2');
+            inp.disabled=true;
+            inp.value='';
+            inp.placeholder='';
+        },
+        enableinput:function(){
+            let inp=container.querySelector('#player2');
+            inp.disabled=false;
+            inp.value='';
+            inp.placeholder='Player2';
+        },
         hideSelection:function() {
             let sel=container.querySelector('.selection');
             sel.classList.add('selectionHide','selectionAnimationOut');
@@ -116,6 +184,7 @@ let gameboard = (function () {
             //Erase fields & hide selection window
             let inputs=document.querySelectorAll('.selection input');
             inputs.forEach(x=>x.value="");
+            objectSelection.highlightplayer('erase');
         },
     };
     let objectWinner = {              
@@ -123,10 +192,12 @@ let gameboard = (function () {
             let displaywinner=document.createElement('div');        
             displaywinner.classList.add('displaywinner', 'winnerhide');
             let winnertext1=document.createElement('div');
-            winnertext1.textContent="Congratulations!";
+            winnertext1.classList.add('winnertext');
+            winnertext1.textContent="Congratulations!";            
             winnertext1.classList.add('winnertitle');
             let winnertext2=document.createElement('div');
             winnertext2.textContent="wins the game!";
+            winnertext2.id='finalword';
             let winnername=document.createElement('div'); 
             winnername.classList.add('winnername');
             let okbutton=document.createElement('button');
@@ -140,10 +211,27 @@ let gameboard = (function () {
             container.appendChild(displaywinner);
         },
         displayWinner:function() {
+            let winnertext1=container.querySelector('.winnertext');
+            if(mainApp.currentPlayer.id===2 && mainApp.opponent==='xan')winnertext1.textContent="Uh Oh!!";
+            else winnertext1.textContent="Congratulations!"; 
+            let displaywinner=container.querySelector('.displaywinner'); 
+            objectWinner.winnerName(mainApp.currentPlayer.name);
+            displaywinner.classList.add('displaywinnerIn');
+            displaywinner.classList.remove('displaywinnerOut');
+            let finalword=container.querySelector('#finalword');
+            finalword.textContent='wins the game!';
+            applyBackdrop();
+            displaywinner.classList.remove('winnerhide');
+        },
+        displayDraw:function() {
+            let winnertext1=container.querySelector('.winnertext');
+            winnertext1.textContent="It's a tie!"; 
             let displaywinner=container.querySelector('.displaywinner'); 
             displaywinner.classList.add('displaywinnerIn');
             displaywinner.classList.remove('displaywinnerOut');
-            objectWinner.winnerName(mainApp.currentPlayer.name);
+            objectWinner.eraseWinner();
+            let finalword=container.querySelector('#finalword');
+            finalword.textContent='';
             applyBackdrop();
             displaywinner.classList.remove('winnerhide');
         },
@@ -176,6 +264,7 @@ let gameboard = (function () {
         hasStarted:false,
         currentPlayer:0,
         totalmoves:0,
+        opponent:'',
         
         // ----
         attachBoard: function() {
@@ -189,9 +278,13 @@ let gameboard = (function () {
                 for(let j=0;j<3;j++){
                     let cell=document.createElement('div');
                     let span=document.createElement('span');
+                    let celloutline=document.createElement('div');
+                    // celloutline.classList.add('boardHover');
                     cell.classList.add('cell');
+                    cell.classList.add('cellshadow');
                     cell.classList.add(`c${i}${j}`);
                     cell.appendChild(span);
+                    cell.appendChild(celloutline);
                     board.appendChild(cell);
                     cell.i=i;
                     cell.j=j;
@@ -206,8 +299,10 @@ let gameboard = (function () {
             // ------ return ------
             return {name, team,id};
         },
+        
         //Make the game start by initializing the array
         gamestart:function(){
+            if(mainApp.opponent==='')return;
             for(let i=0;i<3;i++) {
                 mainApp.gamearray.push([]);
                 for(let j=0;j<3;j++){
@@ -233,6 +328,7 @@ let gameboard = (function () {
         resetgame:function(){
             if(!mainApp.hasStarted)return;
             mainApp.hasStarted=false;
+            mainApp.totalmoves=0;
             mainApp.gamearray=[];
             let cells=container.querySelector('.board').childNodes;
             cells.forEach(x=>{
@@ -245,9 +341,10 @@ let gameboard = (function () {
             let gb=container.querySelector('.board');        
             gb.classList.remove('boardX','boardO');
             objectScore.reset();
+            mainApp.opponent='';
         },
         //Change current player
-        taketurn:function(human=true){
+        taketurn:function(){
             mainApp.currentPlayer===player1 ? mainApp.currentPlayer=player2 : mainApp.currentPlayer=player1;
             objectScore.setText(mainApp.currentPlayer.name+ ", your turn.");
             let cursor=container.querySelector('.board');
@@ -259,7 +356,13 @@ let gameboard = (function () {
                 cursor.classList.add('boardX');
                 cursor.classList.remove('boardO');
             }
-            if(!human&&mainApp.currentPlayer===player2)bestMove();
+            if(mainApp.opponent==='xan'&&mainApp.currentPlayer===player2){
+                mainApp.sleep(750);
+                bestMove();
+            }
+        },
+        sleep:function(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         },
         //Display moves & update array
         makemove:function(e,human=true) {
@@ -288,31 +391,35 @@ let gameboard = (function () {
                     // 
                     return;
                 }
+                if(check===-1){
+                    objectWinner.displayDraw();
+                    return;
+                }
                 mainApp.taketurn(false);
                 if(human)e.currentTarget.classList.remove('boardHover');
             }
         },
         //Check winning condition
-        checkwin:function(human=false) {            
+        checkwin:function() {            
             //rows
-            if(mainApp.gamearray[0][0]===1 && mainApp.gamearray[0][1]===1 && mainApp.gamearray[0][2]===1){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('row',0);return 1;};
-            if(mainApp.gamearray[0][0]===2 && mainApp.gamearray[0][1]===2 && mainApp.gamearray[0][2]===2){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('row',0);return 2;};
-            if(mainApp.gamearray[1][0]===1 && mainApp.gamearray[1][1]===1 && mainApp.gamearray[1][2]===1){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('row',1);return 1;};
-            if(mainApp.gamearray[1][0]===2 && mainApp.gamearray[1][1]===2 && mainApp.gamearray[1][2]===2){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('row',1);return 2;};
-            if(mainApp.gamearray[2][0]===1 && mainApp.gamearray[2][1]===1 && mainApp.gamearray[2][2]===1){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('row',2);return 1;};
-            if(mainApp.gamearray[2][0]===2 && mainApp.gamearray[2][1]===2 && mainApp.gamearray[2][2]===2){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('row',2);return 2;};
+            if(mainApp.gamearray[0][0]===1 && mainApp.gamearray[0][1]===1 && mainApp.gamearray[0][2]===1){mainApp.animateWin('row',0);return 1;};
+            if(mainApp.gamearray[0][0]===2 && mainApp.gamearray[0][1]===2 && mainApp.gamearray[0][2]===2){mainApp.animateWin('row',0);return 2;};
+            if(mainApp.gamearray[1][0]===1 && mainApp.gamearray[1][1]===1 && mainApp.gamearray[1][2]===1){mainApp.animateWin('row',1);return 1;};
+            if(mainApp.gamearray[1][0]===2 && mainApp.gamearray[1][1]===2 && mainApp.gamearray[1][2]===2){mainApp.animateWin('row',1);return 2;};
+            if(mainApp.gamearray[2][0]===1 && mainApp.gamearray[2][1]===1 && mainApp.gamearray[2][2]===1){mainApp.animateWin('row',2);return 1;};
+            if(mainApp.gamearray[2][0]===2 && mainApp.gamearray[2][1]===2 && mainApp.gamearray[2][2]===2){mainApp.animateWin('row',2);return 2;};
             //columns
-            if(mainApp.gamearray[0][0]===1 && mainApp.gamearray[1][0]===1 && mainApp.gamearray[2][0]===1){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('col',0);return 1;};
-            if(mainApp.gamearray[0][0]===2 && mainApp.gamearray[1][0]===2 && mainApp.gamearray[2][0]===2){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('col',0);return 2;};
-            if(mainApp.gamearray[0][1]===1 && mainApp.gamearray[1][1]===1 && mainApp.gamearray[2][1]===1){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('col',1);return 1;};
-            if(mainApp.gamearray[0][1]===2 && mainApp.gamearray[1][1]===2 && mainApp.gamearray[2][1]===2){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('col',1);return 2;};
-            if(mainApp.gamearray[0][2]===1 && mainApp.gamearray[1][2]===1 && mainApp.gamearray[2][2]===1){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('col',2);return 1;};
-            if(mainApp.gamearray[0][2]===2 && mainApp.gamearray[1][2]===2 && mainApp.gamearray[2][2]===2){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('col',2);return 2;};
+            if(mainApp.gamearray[0][0]===1 && mainApp.gamearray[1][0]===1 && mainApp.gamearray[2][0]===1){mainApp.animateWin('col',0);return 1;};
+            if(mainApp.gamearray[0][0]===2 && mainApp.gamearray[1][0]===2 && mainApp.gamearray[2][0]===2){mainApp.animateWin('col',0);return 2;};
+            if(mainApp.gamearray[0][1]===1 && mainApp.gamearray[1][1]===1 && mainApp.gamearray[2][1]===1){mainApp.animateWin('col',1);return 1;};
+            if(mainApp.gamearray[0][1]===2 && mainApp.gamearray[1][1]===2 && mainApp.gamearray[2][1]===2){mainApp.animateWin('col',1);return 2;};
+            if(mainApp.gamearray[0][2]===1 && mainApp.gamearray[1][2]===1 && mainApp.gamearray[2][2]===1){mainApp.animateWin('col',2);return 1;};
+            if(mainApp.gamearray[0][2]===2 && mainApp.gamearray[1][2]===2 && mainApp.gamearray[2][2]===2){mainApp.animateWin('col',2);return 2;};
             //diags
-            if(mainApp.gamearray[0][0]===1 && mainApp.gamearray[1][1]===1 && mainApp.gamearray[2][2]===1){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('diag1',0);return 1;};
-            if(mainApp.gamearray[0][0]===2 && mainApp.gamearray[1][1]===2 && mainApp.gamearray[2][2]===2){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('diag1',0);return 2;};
-            if(mainApp.gamearray[0][2]===1 && mainApp.gamearray[1][1]===1 && mainApp.gamearray[2][0]===1){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('diag2',0);return 1;};
-            if(mainApp.gamearray[0][2]===2 && mainApp.gamearray[1][1]===2 && mainApp.gamearray[2][0]===2){if(human||gameboard.mainApp.currentPlayer.id===1)mainApp.animateWin('diag2',0);return 2;};
+            if(mainApp.gamearray[0][0]===1 && mainApp.gamearray[1][1]===1 && mainApp.gamearray[2][2]===1){mainApp.animateWin('diag1',0);return 1;};
+            if(mainApp.gamearray[0][0]===2 && mainApp.gamearray[1][1]===2 && mainApp.gamearray[2][2]===2){mainApp.animateWin('diag1',0);return 2;};
+            if(mainApp.gamearray[0][2]===1 && mainApp.gamearray[1][1]===1 && mainApp.gamearray[2][0]===1){mainApp.animateWin('diag2',0);return 1;};
+            if(mainApp.gamearray[0][2]===2 && mainApp.gamearray[1][1]===2 && mainApp.gamearray[2][0]===2){mainApp.animateWin('diag2',0);return 2;};
             if(mainApp.totalmoves===9)return -1;
             return 0;
         },
@@ -410,10 +517,21 @@ let gameboard = (function () {
     
     
     function hoverin(e){
-        if(e.currentTarget.firstElementChild.innerHTML==='' && mainApp.hasStarted)e.currentTarget.classList.add('boardHover');
+        let targethover=e.currentTarget.querySelector('div');
+        let targetfill=e.currentTarget.firstElementChild;
+        if(targetfill.innerHTML==='' && mainApp.hasStarted) {
+            targethover.classList.add('boardHover');
+            // e.currentTarget.classList.remove('cellshadow'); querySelector('.cellshadow')
+        }
     }
     function hoverout(e){
-        e.currentTarget.classList.remove('boardHover');
+        let targethover=e.currentTarget.querySelector('div');
+        let targetfill=e.currentTarget.firstElementChild;
+        if(mainApp.hasStarted) {
+            targethover.classList.remove('boardHover');
+            // e.currentTarget.classList.add('cellshadow');
+        }
+        
     }
 
     // ----- private vars above this line -----
