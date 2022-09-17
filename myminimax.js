@@ -1,4 +1,4 @@
-function checkscore(target=gameboard.mainApp.gamearray) {
+function checkscore(target=gameboard.getBoard()) {
     //rows
     if(target[0][0]===1 && target[0][1]===1 && target[0][2]===1)return 1;
     if(target[0][0]===2 && target[0][1]===2 && target[0][2]===2)return 2;
@@ -30,15 +30,15 @@ function checkscore(target=gameboard.mainApp.gamearray) {
 let ai = 2;
 let human = 1;
 
-let bestMove = function() {
+let bestMove = function(target=gameboard.getBoard()) {
     let bestScore = -Infinity;
     let move;
     for(let i=0;i<3;i++){
         for(let j=0;j<3;j++) {
-            if(gameboard.mainApp.gamearray[i][j] === ''){
-                gameboard.mainApp.gamearray[i][j] = ai;
-                let score = minimax(gameboard.mainApp.gamearray, 0, false);  
-                gameboard.mainApp.gamearray[i][j] = '';              
+            if(target[i][j] === ''){
+                target[i][j] = ai;
+                let score = minimax(target, 0, false);  
+                target[i][j] = '';              
                 if(score > bestScore){
                     bestScore = score;
                     move = {i,j};
@@ -47,12 +47,10 @@ let bestMove = function() {
             }
         }            
     }
-    let target=document.querySelector(`.c${move['i']}${move['j']}`);
-    gameboard.mainApp.sleep(750);
+    let celltarget=document.querySelector(`.c${move['i']}${move['j']}`);
     setTimeout(e=>{
-        gameboard.mainApp.makemove(target,false);
-    },750);
-    
+        gameboard.makeMove(celltarget);
+    },750);    
 }
 
 let minimax = function(board, depth, isMaximzing){ 

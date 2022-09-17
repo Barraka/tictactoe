@@ -3,13 +3,9 @@ title.classList.add('animate__bounceInLeft','.animate__animated.animate__infinit
 let container=document.createElement('div');  
 container.classList.add('container'); 
 
-//Defining the gameboard, using a module:
+let gameboard = (function () {   
 
-let gameboard = (function () {
-    
-
-    let objectControls = {
-        
+    let objectControls = {        
         attachControls:function(){
             let buttonstart=document.createElement('button');
             buttonstart.classList.add('buttonstart');
@@ -264,8 +260,7 @@ let gameboard = (function () {
         hasStarted:false,
         currentPlayer:0,
         totalmoves:0,
-        opponent:'',
-        
+        opponent:'',        
         // ----
         attachBoard: function() {
             let board=document.createElement('div');
@@ -279,7 +274,6 @@ let gameboard = (function () {
                     let cell=document.createElement('div');
                     let span=document.createElement('span');
                     let celloutline=document.createElement('div');
-                    // celloutline.classList.add('boardHover');
                     cell.classList.add('cell');
                     cell.classList.add('cellshadow');
                     cell.classList.add(`c${i}${j}`);
@@ -298,8 +292,7 @@ let gameboard = (function () {
         player:function(name, team,id){
             // ------ return ------
             return {name, team,id};
-        },
-        
+        },        
         //Make the game start by initializing the array
         gamestart:function(){
             if(mainApp.opponent==='')return;
@@ -333,7 +326,6 @@ let gameboard = (function () {
             let cells=container.querySelector('.board').childNodes;
             cells.forEach(x=>{
                 x.firstElementChild.textContent="";
-                //x.classList="cell";
                 x.classList.remove('player1','player2','animateCell');
             });            
             let start=container.querySelector('.buttonstart');
@@ -357,25 +349,20 @@ let gameboard = (function () {
                 cursor.classList.remove('boardO');
             }
             if(mainApp.opponent==='xan'&&mainApp.currentPlayer===player2){
-                mainApp.sleep(750);
                 bestMove();
             }
         },
-        sleep:function(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        },
         //Display moves & update array
-        makemove:function(e,human=true) {
+        makemove:function(e) {
             if(!mainApp.hasStarted){
                 objectControls.hintStart();
                 return;
             }
             let target;
-            if(human){
+            if(mainApp.opponent==='human' || mainApp.currentPlayer.id===1){
                 target=e.currentTarget;
             }
             else {
-                // target=container.querySelector(`c${e[0]}${e[1]}`); 
                 target=e;                 
             }
             let currentcell=mainApp.gamearray[target.i][target.j]; 
@@ -386,9 +373,7 @@ let gameboard = (function () {
                 target.firstElementChild.textContent=mainApp.currentPlayer.team;            
                 let check=mainApp.checkwin();
                 if(check>0){
-                    if(human)e.currentTarget.classList.remove('boardHover');
-                    // objectWinner.displayWinner(mainApp.currentPlayer.name);
-                    // 
+                    if(mainApp.opponent==='human')e.currentTarget.classList.remove('boardHover');
                     return;
                 }
                 if(check===-1){
@@ -396,7 +381,7 @@ let gameboard = (function () {
                     return;
                 }
                 mainApp.taketurn(false);
-                if(human)e.currentTarget.classList.remove('boardHover');
+                if(mainApp.opponent==='human')e.currentTarget.classList.remove('boardHover');
             }
         },
         //Check winning condition
@@ -457,7 +442,6 @@ let gameboard = (function () {
         }
         
     };
-
     let objectScore = {
         scoreEle:'',
         attachScore:function(){
@@ -467,14 +451,12 @@ let gameboard = (function () {
             scoretext.classList.add('scoretext');
             scoretext.id="scoretext";        
             score.appendChild(scoretext);
-            container.appendChild(score);
-            
+            container.appendChild(score);            
         },
         getEle:function(){
             let scroll=container.querySelector('#scoretext');
             this.scoreEle=scroll;
-        },
-        
+        },        
         removeText() {
             this.getEle();
             this.scoreEle.innerHTML='';
@@ -505,7 +487,6 @@ let gameboard = (function () {
             this.setText('Press Start to play the game!');
         }
     }
-
     function applyBackdrop() {
         let b=container.querySelector('.backdrop');
         b.classList.remove('backdroptoggle'); 
@@ -513,15 +494,12 @@ let gameboard = (function () {
     function removeBackdrop() {
         let b=container.querySelector('.backdrop');
         b.classList.add('backdroptoggle'); 
-    }
-    
-    
+    }        
     function hoverin(e){
         let targethover=e.currentTarget.querySelector('div');
         let targetfill=e.currentTarget.firstElementChild;
         if(targetfill.innerHTML==='' && mainApp.hasStarted) {
             targethover.classList.add('boardHover');
-            // e.currentTarget.classList.remove('cellshadow'); querySelector('.cellshadow')
         }
     }
     function hoverout(e){
@@ -529,31 +507,29 @@ let gameboard = (function () {
         let targetfill=e.currentTarget.firstElementChild;
         if(mainApp.hasStarted) {
             targethover.classList.remove('boardHover');
-            // e.currentTarget.classList.add('cellshadow');
-        }
-        
+        }    
     }
-
-    // ----- private vars above this line -----
+    let initialize=function(){
+        objectScore.attachScore();
+        objectScore.reset();
+        mainApp.attachBoard();
+        objectControls.attachControls();
+        objectSelection.attachSelection();
+        objectWinner.attachWinner(); 
+        document.body.appendChild(container);
+    }
+    let getBoard=function(){
+        return mainApp.gamearray;
+    }
+    let makeMove=function(m){
+        mainApp.makemove(m);
+    }
+    // ----------
     return {
-        objectControls,
-        objectSelection,
-        objectWinner,
-        mainApp,        
-        objectScore,
-        applyBackdrop,
-        removeBackdrop,
-        hoverin,
-        hoverout,        
+        initialize,
+        getBoard,
+        makeMove,
     };
 })();
 
-// gameboard.displayboard();
-gameboard.objectScore.attachScore();
-gameboard.objectScore.reset();
-gameboard.mainApp.attachBoard();
-gameboard.objectControls.attachControls();
-gameboard.objectSelection.attachSelection();
-gameboard.objectWinner.attachWinner();
-//----
-document.body.appendChild(container);
+gameboard.initialize();
